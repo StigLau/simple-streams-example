@@ -7,7 +7,6 @@ import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
-import org.apache.kafka.streams.test.TestRecord;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.After;
 import org.junit.Test;
@@ -26,6 +25,7 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 
+import static io.confluent.developer.MovieProcessor.buildTopology;
 import static org.junit.Assert.assertEquals;
 
 public class JoinStreamToTableTest {
@@ -84,7 +84,7 @@ public class JoinStreamToTableTest {
 
     @Test
     public void testJoin() throws IOException {
-        JoinStreamToTable jst = new JoinStreamToTable();
+        MovieJoinerApp jst = new MovieJoinerApp();
         Properties allProps = jst.loadEnvProperties(TEST_CONFIG_FILE);
 
         String tableTopic = allProps.getProperty("movie.topic.name");
@@ -93,7 +93,7 @@ public class JoinStreamToTableTest {
         allProps.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         allProps.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class);
 
-        Topology topology = jst.buildTopology(allProps);
+        Topology topology = buildTopology(allProps);
         testDriver = new TopologyTestDriver(topology, allProps);
 
         Serializer<String> keySerializer = Serdes.String().serializer();
