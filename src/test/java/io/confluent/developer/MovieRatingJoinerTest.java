@@ -1,5 +1,6 @@
 package io.confluent.developer;
 
+import org.apache.kafka.streams.kstream.ValueJoiner;
 import org.junit.Test;
 
 import io.confluent.developer.avro.Movie;
@@ -23,8 +24,13 @@ public class MovieRatingJoinerTest {
         .setRating(9.8)
         .build();
 
-    MovieRatingJoiner joiner = new MovieRatingJoiner();
-    actualRatedMovie = joiner.apply(rating, treeOfLife);
+    actualRatedMovie = ((ValueJoiner<Rating, Movie, RatedMovie>) (rating1, movie) -> RatedMovie.newBuilder()
+            .setId(movie.getId())
+            .setTitle(movie.getTitle())
+            .setReleaseYear(movie.getReleaseYear())
+            .setRating(rating1.getRating())
+            .build())
+            .apply(rating, treeOfLife);
 
     assertEquals(actualRatedMovie, expectedRatedMovie);
   }
