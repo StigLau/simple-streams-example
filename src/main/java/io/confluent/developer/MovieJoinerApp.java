@@ -11,26 +11,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.time.Duration;
 
-import io.confluent.developer.avro.RatedMovie;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 
 import static io.confluent.developer.MovieProcessor.buildTopology;
 
 public class MovieJoinerApp {
-
-
-
-    public static SpecificAvroSerde<RatedMovie> ratedMovieAvroSerde(Properties allProps) {
-        SpecificAvroSerde<RatedMovie> movieAvroSerde = new SpecificAvroSerde<>();
-        movieAvroSerde.configure((Map)allProps, false);
-        return movieAvroSerde;
-    }
-
     public void createTopics(Properties allProps) {
         AdminClient client = AdminClient.create(allProps);
         List<NewTopic> topics = new ArrayList<>();
@@ -58,15 +47,6 @@ public class MovieJoinerApp {
         client.close();
     }
 
-    public Properties loadEnvProperties(String fileName) throws IOException {
-        Properties allProps = new Properties();
-        FileInputStream input = new FileInputStream(fileName);
-        allProps.load(input);
-        input.close();
-
-        return allProps;
-    }
-
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
             throw new IllegalArgumentException("This program takes one argument: the path to an environment configuration file.");
@@ -83,8 +63,8 @@ public class MovieJoinerApp {
         System.out.println("============\n" +
                 "Topology be like \n" +
                 "============\n" +
-            topology.describe());
-        
+                topology.describe());
+
         final KafkaStreams streams = new KafkaStreams(topology, allProps);
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -104,5 +84,14 @@ public class MovieJoinerApp {
             System.exit(1);
         }
         System.exit(0);
+    }
+
+    public Properties loadEnvProperties(String fileName) throws IOException {
+        Properties allProps = new Properties();
+        FileInputStream input = new FileInputStream(fileName);
+        allProps.load(input);
+        input.close();
+
+        return allProps;
     }
 }
