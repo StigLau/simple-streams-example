@@ -80,7 +80,9 @@ public class MovieJoinerApp {
 
         ts.createTopics(allProps);
 
-        System.out.println("Topology be like \n" +
+        System.out.println("============\n" +
+                "Topology be like \n" +
+                "============\n" +
             topology.describe());
         
         final KafkaStreams streams = new KafkaStreams(topology, allProps);
