@@ -4,27 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <organization>
-        <name>Gjensidige Forsikring ASA</name>
-        <url>http://www.gjensidige.no</url>
-    </organization>
     <inceptionYear>2022</inceptionYear>
 
-    <groupId>no.gjensidige.integration</groupId>
-    <artifactId>integration-kafka-partner-update-customer</artifactId>
-    <version>${revision}</version>
+    <groupId>no.lau.kafka</groupId>
+    <artifactId>simple-streams-example</artifactId>
+    <version>1.0</version>
 
-    <scm>
-        <connection>scm:git:git@github.com:gjensidige/${project.artifactId}.git</connection>
-        <url>scm:git:git@github.com:gjensidige/${project.artifactId}.git</url>
-        <developerConnection>scm:git:git@github.com:gjensidige/${project.artifactId}.git</developerConnection>
-    </scm>
 
     <repositories>
-        <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/gjensidige/*</url>
-        </repository>
         <repository>
             <id>confluent</id>
             <name>Confluent</name>
@@ -38,7 +25,7 @@
         <maven-plugin.version>3.10.1</maven-plugin.version>
         <avro.version>1.11.0</avro.version>
         <confluent.version>7.1.1</confluent.version>
-        <encryption.version>7.x-1.5.1</encryption.version>
+        <kotlin.version>1.5.10</kotlin.version>
     </properties>
 
     <dependencies>
@@ -58,9 +45,9 @@
             <version>7.1.1</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -68,19 +55,13 @@
             <version>3.2.0</version>
             <scope>test</scope>
         </dependency>
-
-
         <dependency>
-            <groupId>io.confluent.confluent-encryption</groupId>
-            <artifactId>confluent-encryption-common</artifactId>
-            <version>${encryption.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.github.javafaker</groupId>
-                    <artifactId>javafaker</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.16.1</version>
+            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
@@ -91,16 +72,35 @@
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+            <version>1.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>${project.artifactId}</finalName>
+        <!--
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
+        -->
         <plugins>
             <plugin>
                 <groupId>org.apache.avro</groupId>
@@ -122,9 +122,49 @@
             </plugin>
 
             <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -132,13 +172,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub Maven Packages - ${project.artifactId}</name>
-            <url>https://maven.pkg.github.com/gjensidige/${project.artifactId}</url>
-        </repository>
-    </distributionManagement>
-
 </project>

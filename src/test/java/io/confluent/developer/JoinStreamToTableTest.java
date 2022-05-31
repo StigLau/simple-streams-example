@@ -8,9 +8,6 @@ import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.StreamsConfig;
-import org.junit.After;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +21,8 @@ import io.confluent.developer.avro.Rating;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import static io.confluent.developer.MovieProcessor.buildTopology;
 import static org.junit.Assert.assertEquals;
@@ -151,7 +150,7 @@ public class JoinStreamToTableTest {
         assertEquals(ratedMovies, actualOutput);
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         testDriver.close();
     }
